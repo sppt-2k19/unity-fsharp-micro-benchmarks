@@ -1,0 +1,3 @@
+[submodule "Unity-FSharp"]
+	path = Unity-FSharp
+	url = https://github.com/sppt-2019/Unity-FSharp.git
