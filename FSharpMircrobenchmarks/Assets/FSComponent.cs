@@ -11,13 +11,14 @@ public class FSComponent : MonoBehaviour
     {
         _fsLib = new FSLib();
         _fsLib.FStart();
-        Debug.Log(Bench.lengthVector2D(2));
         Debug.Log("Hi from C#");
         
     }
 
     private void Update()
     {
-        _fsLib.benchmarkRunner();
+        var x = _fsLib.benchmarkRunner();
+        if(Input.GetKey(KeyCode.Space))
+            Debug.Log("Shoud've been running benchmarks");
     }
 }

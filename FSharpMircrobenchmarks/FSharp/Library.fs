@@ -107,7 +107,7 @@ type FSLib() =
             Debug.Log "Ready from F#" 
             2
            
-        member x.benchmarkRunner =
+        member x.benchmarkRunner() =
             if Input.GetKeyDown KeyCode.Space && not testsStarted then 
                 Debug.Log "Starting tests"
                 testsStarted <- false
@@ -127,5 +127,6 @@ type FSLib() =
                 result <- result + benchmark "LengthVector3D" iterations maxTime lengthVector3D
                 result <- result + benchmark "DotProductVector2D" iterations maxTime dotProductVector2D
                 result <- result + benchmark "DotProductVector3D" iterations maxTime dotProductVector3D
+                Debug.Log "Done with tests"
             0
 
