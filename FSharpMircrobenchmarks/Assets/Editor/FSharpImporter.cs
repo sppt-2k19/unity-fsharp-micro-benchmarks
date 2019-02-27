@@ -23,29 +23,17 @@ public class FSharpImporter : AssetPostprocessor
 
 	static void OnPostprocessAllAssets(string[] importedAssets, string[] deletedAssets, string[] movedAssets, string[] movedFromAssetPaths)
 	{
+		bool doComp = false;
 		if (!autoRecompileEnabled)
 		{
-			Debug.Log("Not recompiling on import");
+			//Debug.Log("Not recompiling on import");
 			return; 
 		}
-		
-		foreach (string str in importedAssets)
-		{
-			Debug.Log("Reimported Asset:  " + str);
-			if (str.EndsWith(".fs"))
-			{
-				SystemCall();
-			}
-		}
-		foreach (string str in deletedAssets)
-		{
-			Debug.Log("Deleted Asset: " + str);
-		}
 
-		for (int i = 0; i < movedAssets.Length; i++)
-		{
-			Debug.Log("Moved Asset: " + movedAssets[i] + " from: " + movedFromAssetPaths[i]);
-		}
+		doComp = importedAssets.Any(ass => ass.EndsWith(".fs"));
+
+		if (doComp)
+			SystemCall();
 	}
 
 	
@@ -58,7 +46,7 @@ public class FSharpImporter : AssetPostprocessor
 
 			var dir = Directory.GetCurrentDirectory();
 			Debug.Log(Path.Combine(dir, projectLocation));
-			var p = Process.Start("msbuild", Path.Combine(dir, projectLocation));
+			var p = Process.Start(buildTool, Path.Combine(dir, projectLocation));
 			p?.WaitForExit();
 			var target = Path.Combine(dir, dllTarget);
 			FileUtil.DeleteFileOrDirectory(target);
