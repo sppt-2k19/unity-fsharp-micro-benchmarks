@@ -8,9 +8,9 @@ using UnityEditor;
 using UnityEngine.Playables;
 using Debug = UnityEngine.Debug;
 
+
 public class FSharpImporter : AssetPostprocessor
 {
-
 	private static string projectLocation = "FSharp/FSharp.sln";
 	private static string dllLocation = "FSharp/bin/Debug/UFSharp.dll";
 	private static string dllTarget = "Assets/Libs/UFSharp.dll";
@@ -24,12 +24,13 @@ public class FSharpImporter : AssetPostprocessor
 	static void OnPostprocessAllAssets(string[] importedAssets, string[] deletedAssets, string[] movedAssets, string[] movedFromAssetPaths)
 	{
 		bool doComp = false;
-		if (!autoRecompileEnabled)
-		{
-			//Debug.Log("Not recompiling on import");
-			return; 
-		}
+//		if (!autoRecompileEnabled)
+//		{
+//			//Debug.Log("Not recompiling on import");
+//			return; 
+//		}
 
+		Debug.Log("Imported: " + string.Join(", ", importedAssets));
 		doComp = importedAssets.Any(ass => ass.EndsWith(".fs"));
 
 		if (doComp)
@@ -43,15 +44,16 @@ public class FSharpImporter : AssetPostprocessor
 		UnityEngine.Debug.Log ("Beginning F# compilation");
 		try
 		{
-
 			var dir = Directory.GetCurrentDirectory();
-			Debug.Log(Path.Combine(dir, projectLocation));
-			var p = Process.Start(buildTool, Path.Combine(dir, projectLocation));
+			var fsProjects = Directory.EnumerateFiles(dir, "*.fsproj");
+			var project = fsProjects.FirstOrDefault();
+//			Debug.Log(Path.Combine(dir, projectLocation));
+			Debug.Log("Compiling: " + Path.GetFileNameWithoutExtension(project));
+			var p = Process.Start(buildTool, project);
 			p?.WaitForExit();
 			var target = Path.Combine(dir, dllTarget);
 			FileUtil.DeleteFileOrDirectory(target);
 			FileUtil.CopyFileOrDirectory(Path.Combine(dir, dllLocation), target);
-			Debug.Log("Done compiling F#");
 
 		} catch (System.Exception e) {
 			UnityEngine.Debug.LogError(e);
