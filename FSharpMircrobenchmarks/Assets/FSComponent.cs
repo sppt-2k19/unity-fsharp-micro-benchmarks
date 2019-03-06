@@ -17,8 +17,10 @@ public class FSComponent : MonoBehaviour
 
     private void Update()
     {
-        var x = _fsLib.benchmarkRunner();
-        if(Input.GetKey(KeyCode.Space))
+        if (Input.GetKey(KeyCode.Space))
+        {
             Debug.Log("Shoud've been running benchmarks");
+            var x = _fsLib.benchmarkRunner();
+        }
     }
 }
