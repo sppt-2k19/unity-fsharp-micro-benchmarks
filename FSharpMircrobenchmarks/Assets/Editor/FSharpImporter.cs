@@ -24,11 +24,11 @@ public class FSharpImporter : AssetPostprocessor
 	static void OnPostprocessAllAssets(string[] importedAssets, string[] deletedAssets, string[] movedAssets, string[] movedFromAssetPaths)
 	{
 		bool doComp = false;
-//		if (!autoRecompileEnabled)
-//		{
-//			//Debug.Log("Not recompiling on import");
-//			return; 
-//		}
+		if (!autoRecompileEnabled)
+		{
+			//Debug.Log("Not recompiling on import");
+			return; 
+		}
 
 		Debug.Log("Imported: " + string.Join(", ", importedAssets));
 		doComp = importedAssets.Any(ass => ass.EndsWith(".fs"));
