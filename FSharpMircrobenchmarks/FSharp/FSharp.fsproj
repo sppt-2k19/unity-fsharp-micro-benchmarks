@@ -45,12 +45,11 @@
     <Reference Include="UnityEngine, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null">
       <HintPath>..\..\..\..\Unity\Hub\Editor\2018.3.6f1\Editor\Data\Managed\UnityEngine.dll</HintPath>
     </Reference>
-    <Reference Include="UnityEngine.CoreModule, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null">
-      <HintPath>..\..\..\..\Unity\Hub\Editor\2018.3.6f1\Editor\Data\Managed\UnityEngine\UnityEngine.CoreModule.dll</HintPath>
-    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblyInfo.fs" />
+    <Compile Include="NoMutateBenchmarks.fs" />
+    <Compile Include="MutateBenchmarks.fs" />
     <Compile Include="Library.fs" />
     <None Include="Script.fsx" />
     <Content Include="packages.config" />
