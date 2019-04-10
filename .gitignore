@@ -1,5 +1,9 @@
 FSharpMircrobenchmarks/.idea/
 
+**/.idea
+**/bin/Debug/
+**/bin/Release/
+
 [Ll]ibrary/
 [Tt]emp/
 [Oo]bj/
