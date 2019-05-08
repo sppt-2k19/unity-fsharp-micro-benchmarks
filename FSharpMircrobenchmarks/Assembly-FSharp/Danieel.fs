@@ -7,4 +7,6 @@ type Danieeeel() =
     
     member this.Update() =
         if Input.GetKeyDown(KeyCode.Space) then 
+            UnityEngine.Debug.Log "starting"
             Run.start()
+            UnityEngine.Debug.Log "finished"

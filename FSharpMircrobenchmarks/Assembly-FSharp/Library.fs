@@ -3,32 +3,9 @@ open System
 open GameOfLife
 open NumericalBenchmarks
 open InvasionPercolation
+open MapReduce
+open SestoftBenchmark
 open UnityEngine
-
-let iterativeBenchmark msg func iterations minTime =
-    let mutable count = 1
-    let mutable runningTime = 0.0
-    let mutable deltaTime = 0.0
-    let mutable deltaTimeSquared = 0.0
-    
-    while (runningTime < minTime && count < Int32.MaxValue / 2) do
-        count <- count * 2
-        deltaTime <- 0.0
-        deltaTimeSquared <- 0.0 
-        for j in 0 .. iterations do
-            let started = DateTime.UtcNow
-            for i in 0 .. count do
-                func i |> ignore
-            runningTime <- DateTime.UtcNow.Subtract(started).TotalMilliseconds * 1000000.0
-            let time = runningTime / float count
-            deltaTime <- deltaTime + time
-            deltaTimeSquared <- deltaTimeSquared + time * time
-    let mean = deltaTime / float iterations
-    let standardDeviation = sqrt (abs (deltaTimeSquared - mean * mean * float iterations) / float (iterations - 1))
-    printfn "%20s,%20.3f,%20.3f,%20i" msg mean standardDeviation count
-    msg, mean, standardDeviation, count
-
-
 
 
 let start () =
@@ -40,32 +17,146 @@ let start () =
     let mutable results = []
     let (<<) l r = results <- results @ [ r ]
     
-    let runBenchmark bench msg func = bench msg func iterations minTime
+    let runBenchmark msg func = Benchmark.Mark8 (msg, (new Func<int, float32>(func)), iterations, minTime)
     let toString resultTuple =
-        let (name, mean, dev, count) = resultTuple
+        let struct(name, mean, dev, count, dummy) = resultTuple
         sprintf "%s,%.3f,%.3f,%i" name mean dev count
-    
+
     printfn "Iterative Mark8 benchmark"
-    results << runBenchmark iterativeBenchmark "Sestoft Multiply" multiply
-    results << runBenchmark iterativeBenchmark "Primes" (primes 100)
-    results << runBenchmark iterativeBenchmark "RandomizeArray" (randomizeArray 4 4)
-    results << runBenchmark iterativeBenchmark "GameOfLife" (iterateGameOfLifeTimes 4)
-    results << runBenchmark iterativeBenchmark "InvasionPercolation" (invasionPercolation 5 10)
-    results << runBenchmark iterativeBenchmark "FibonacciRecursive" (fibRecWrap 150)
-    results << runBenchmark iterativeBenchmark "FibonacciIterative" (fibIterWrap 150)
     
-    results << runBenchmark iterativeBenchmark "ScaleVector2D" MutateBenchmarks.scaleVector2D
-    results << runBenchmark iterativeBenchmark "ScaleVector3D" MutateBenchmarks.scaleVector3D 
-    results << runBenchmark iterativeBenchmark "MultiplyVector2D" MutateBenchmarks.multiplyVector2D
-    results << runBenchmark iterativeBenchmark "MultiplyVector3D" MutateBenchmarks.multiplyVector3D
-    results << runBenchmark iterativeBenchmark "TranslateVector2D" MutateBenchmarks.translateVector2D  
-    results << runBenchmark iterativeBenchmark "TranslateVector3D" MutateBenchmarks.translateVector3D
-    results << runBenchmark iterativeBenchmark "SubtractVector2D" MutateBenchmarks.subtractVector2D
-    results << runBenchmark iterativeBenchmark "SubtractVector3D" MutateBenchmarks.subtractVector3D
-    results << runBenchmark iterativeBenchmark "LengthVector2D" MutateBenchmarks.lengthVector2D
-    results << runBenchmark iterativeBenchmark "LengthVector3D" MutateBenchmarks.lengthVector3D
-    results << runBenchmark iterativeBenchmark "DotProductVector2D" MutateBenchmarks.dotProductVector2D  
-    results << runBenchmark iterativeBenchmark "DotProductVector3D" MutateBenchmarks.dotProductVector3D
+    
+    results << runBenchmark "MapReduce Array" mapReduceArray
+    results << runBenchmark "MapReduce Array" mapReduceArray
+    results << runBenchmark "MapReduce Array" mapReduceArray
+    results << runBenchmark "MapReduce Array" mapReduceArray
+    results << runBenchmark "MapReduce Array" mapReduceArray
+    
+    results << runBenchmark "MapReduce Seq" mapReduceSeq
+    results << runBenchmark "MapReduce Seq" mapReduceSeq
+    results << runBenchmark "MapReduce Seq" mapReduceSeq
+    results << runBenchmark "MapReduce Seq" mapReduceSeq
+    results << runBenchmark "MapReduce Seq" mapReduceSeq
+    
+    results << runBenchmark "MapReduce Unions" mapReduceUnions
+    results << runBenchmark "MapReduce Unions" mapReduceUnions
+    results << runBenchmark "MapReduce Unions" mapReduceUnions
+    results << runBenchmark "MapReduce Unions" mapReduceUnions
+    results << runBenchmark "MapReduce Unions" mapReduceUnions
+    
+    results << runBenchmark "Sestoft Multiply" multiply
+    results << runBenchmark "Sestoft Multiply" multiply
+    results << runBenchmark "Sestoft Multiply" multiply
+    results << runBenchmark "Sestoft Multiply" multiply
+    results << runBenchmark "Sestoft Multiply" multiply
+    
+    results << runBenchmark "Primes" (primes 100)
+    results << runBenchmark "Primes" (primes 100)
+    results << runBenchmark "Primes" (primes 100)
+    results << runBenchmark "Primes" (primes 100)
+    results << runBenchmark "Primes" (primes 100)
+    
+    results << runBenchmark "RandomizeArray" (randomizeArray 4 4)
+    results << runBenchmark "RandomizeArray" (randomizeArray 4 4)
+    results << runBenchmark "RandomizeArray" (randomizeArray 4 4)
+    results << runBenchmark "RandomizeArray" (randomizeArray 4 4)
+    results << runBenchmark "RandomizeArray" (randomizeArray 4 4)
+    
+    results << runBenchmark "GameOfLife" (iterateGameOfLifeTimes 4)
+    results << runBenchmark "GameOfLife" (iterateGameOfLifeTimes 4)
+    results << runBenchmark "GameOfLife" (iterateGameOfLifeTimes 4)
+    results << runBenchmark "GameOfLife" (iterateGameOfLifeTimes 4)
+    results << runBenchmark "GameOfLife" (iterateGameOfLifeTimes 4)
+    
+    results << runBenchmark "InvasionPercolation" (invPercoBenchmark 5 10)
+    results << runBenchmark "InvasionPercolation" (invPercoBenchmark 5 10)
+    results << runBenchmark "InvasionPercolation" (invPercoBenchmark 5 10)
+    results << runBenchmark "InvasionPercolation" (invPercoBenchmark 5 10)
+    results << runBenchmark "InvasionPercolation" (invPercoBenchmark 5 10)
+    
+    results << runBenchmark "FibonacciRecursive" (fibRecWrap 150)
+    results << runBenchmark "FibonacciRecursive" (fibRecWrap 150)
+    results << runBenchmark "FibonacciRecursive" (fibRecWrap 150)
+    results << runBenchmark "FibonacciRecursive" (fibRecWrap 150)
+    results << runBenchmark "FibonacciRecursive" (fibRecWrap 150)
+    
+    results << runBenchmark "FibonacciIterative" (fibIterWrap 150)
+    results << runBenchmark "FibonacciIterative" (fibIterWrap 150)
+    results << runBenchmark "FibonacciIterative" (fibIterWrap 150)
+    results << runBenchmark "FibonacciIterative" (fibIterWrap 150)
+    results << runBenchmark "FibonacciIterative" (fibIterWrap 150)
+    
+    results << runBenchmark "ScaleVector2D" MutateBenchmarks.scaleVector2D
+    results << runBenchmark "ScaleVector2D" MutateBenchmarks.scaleVector2D
+    results << runBenchmark "ScaleVector2D" MutateBenchmarks.scaleVector2D
+    results << runBenchmark "ScaleVector2D" MutateBenchmarks.scaleVector2D
+    results << runBenchmark "ScaleVector2D" MutateBenchmarks.scaleVector2D
+    
+    results << runBenchmark "ScaleVector3D" MutateBenchmarks.scaleVector3D 
+    results << runBenchmark "ScaleVector3D" MutateBenchmarks.scaleVector3D 
+    results << runBenchmark "ScaleVector3D" MutateBenchmarks.scaleVector3D 
+    results << runBenchmark "ScaleVector3D" MutateBenchmarks.scaleVector3D 
+    results << runBenchmark "ScaleVector3D" MutateBenchmarks.scaleVector3D
+    
+    results << runBenchmark "MultiplyVector2D" MutateBenchmarks.multiplyVector2D
+    results << runBenchmark "MultiplyVector2D" MutateBenchmarks.multiplyVector2D
+    results << runBenchmark "MultiplyVector2D" MutateBenchmarks.multiplyVector2D
+    results << runBenchmark "MultiplyVector2D" MutateBenchmarks.multiplyVector2D
+    results << runBenchmark "MultiplyVector2D" MutateBenchmarks.multiplyVector2D
+    
+    results << runBenchmark "MultiplyVector3D" MutateBenchmarks.multiplyVector3D
+    results << runBenchmark "MultiplyVector3D" MutateBenchmarks.multiplyVector3D
+    results << runBenchmark "MultiplyVector3D" MutateBenchmarks.multiplyVector3D
+    results << runBenchmark "MultiplyVector3D" MutateBenchmarks.multiplyVector3D
+    results << runBenchmark "MultiplyVector3D" MutateBenchmarks.multiplyVector3D
+    
+    results << runBenchmark "TranslateVector2D" MutateBenchmarks.translateVector2D  
+    results << runBenchmark "TranslateVector2D" MutateBenchmarks.translateVector2D  
+    results << runBenchmark "TranslateVector2D" MutateBenchmarks.translateVector2D  
+    results << runBenchmark "TranslateVector2D" MutateBenchmarks.translateVector2D  
+    results << runBenchmark "TranslateVector2D" MutateBenchmarks.translateVector2D
+    
+    results << runBenchmark "TranslateVector3D" MutateBenchmarks.translateVector3D
+    results << runBenchmark "TranslateVector3D" MutateBenchmarks.translateVector3D
+    results << runBenchmark "TranslateVector3D" MutateBenchmarks.translateVector3D
+    results << runBenchmark "TranslateVector3D" MutateBenchmarks.translateVector3D
+    results << runBenchmark "TranslateVector3D" MutateBenchmarks.translateVector3D
+    
+    results << runBenchmark "SubtractVector2D" MutateBenchmarks.subtractVector2D
+    results << runBenchmark "SubtractVector2D" MutateBenchmarks.subtractVector2D
+    results << runBenchmark "SubtractVector2D" MutateBenchmarks.subtractVector2D
+    results << runBenchmark "SubtractVector2D" MutateBenchmarks.subtractVector2D
+    results << runBenchmark "SubtractVector2D" MutateBenchmarks.subtractVector2D
+    
+    results << runBenchmark "SubtractVector3D" MutateBenchmarks.subtractVector3D
+    results << runBenchmark "SubtractVector3D" MutateBenchmarks.subtractVector3D
+    results << runBenchmark "SubtractVector3D" MutateBenchmarks.subtractVector3D
+    results << runBenchmark "SubtractVector3D" MutateBenchmarks.subtractVector3D
+    results << runBenchmark "SubtractVector3D" MutateBenchmarks.subtractVector3D
+    
+    results << runBenchmark "LengthVector2D" MutateBenchmarks.lengthVector2D
+    results << runBenchmark "LengthVector2D" MutateBenchmarks.lengthVector2D
+    results << runBenchmark "LengthVector2D" MutateBenchmarks.lengthVector2D
+    results << runBenchmark "LengthVector2D" MutateBenchmarks.lengthVector2D
+    results << runBenchmark "LengthVector2D" MutateBenchmarks.lengthVector2D
+    
+    results << runBenchmark "LengthVector3D" MutateBenchmarks.lengthVector3D
+    results << runBenchmark "LengthVector3D" MutateBenchmarks.lengthVector3D
+    results << runBenchmark "LengthVector3D" MutateBenchmarks.lengthVector3D
+    results << runBenchmark "LengthVector3D" MutateBenchmarks.lengthVector3D
+    results << runBenchmark "LengthVector3D" MutateBenchmarks.lengthVector3D
+    
+    results << runBenchmark "DotProductVector2D" MutateBenchmarks.dotProductVector2D  
+    results << runBenchmark "DotProductVector2D" MutateBenchmarks.dotProductVector2D  
+    results << runBenchmark "DotProductVector2D" MutateBenchmarks.dotProductVector2D  
+    results << runBenchmark "DotProductVector2D" MutateBenchmarks.dotProductVector2D  
+    results << runBenchmark "DotProductVector2D" MutateBenchmarks.dotProductVector2D
+    
+    results << runBenchmark "DotProductVector3D" MutateBenchmarks.dotProductVector3D
+    results << runBenchmark "DotProductVector3D" MutateBenchmarks.dotProductVector3D
+    results << runBenchmark "DotProductVector3D" MutateBenchmarks.dotProductVector3D
+    results << runBenchmark "DotProductVector3D" MutateBenchmarks.dotProductVector3D
+    results << runBenchmark "DotProductVector3D" MutateBenchmarks.dotProductVector3D
+    
     
     Debug.Log ("Test,Mean,Deviation,Count\n" + String.Join("\n", (List.map toString results)))
     System.IO.File.WriteAllText("results.csv", "Test,Mean,Deviation,Count\n" + String.Join("\n", (List.map toString results)))
